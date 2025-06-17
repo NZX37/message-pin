@@ -1,3 +1,14 @@
+pip install PyGithub
+
+from github import Github
+
+g = Github("your_access_token")
+
+user = g.get_user()
+
+# Print all repositories of the authenticated user
+for repo in user.get_repos():
+print(repo.name)
 num = int(input("Number to check: "))
 flag = False
 if num == 0 or num == 1:
