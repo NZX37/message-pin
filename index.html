@@ -1,37 +1,116 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Digital Reminder Board</title>
+  <meta charset="UTF-8">
+  <title>📌 Message Board</title>
   <style>
-    body { font-family: sans-serif; background: #eef; padding: 20px; }
-    .msg { background: white; margin: 10px 0; padding: 10px; border-radius: 6px; }
-    .pinned { font-weight: bold; color: red; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #dfe9f3, #ffffff);
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    header {
+      background: #01489b;
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .container {
+      max-width: 700px;
+      margin: 30px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    button {
+      background-color: #198c6e;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #146c56;
+    }
+    .section-title {
+      margin-top: 30px;
+      font-size: 1.2rem;
+      border-bottom: 2px solid #01489b;
+      padding-bottom: 5px;
+    }
+    .message {
+      background-color: #f5f9ff;
+      border-left: 4px solid #01489b;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 6px;
+    }
+    .pinned {
+      border-left-color: #e63946;
+      background-color: #fff4f4;
+    }
+    .meta {
+      font-size: 0.85rem;
+      color: #666;
+    }
   </style>
 </head>
 <body>
-  <h1>Digital Reminder Board</h1>
+  <header>
+    <h1>📌 Shared Message Board</h1>
+    <p>Post and view messages from everyone</p>
+  </header>
 
-  <input id="msg" placeholder="Your message" />
-  <label><input type="checkbox" id="pin" /> Pin </label>
-  <button onclick="submitMsg()">Paste Up</button>
+  <div class="container">
+    <h2>Post a Message</h2>
+    <input id="username" type="text" placeholder="Your name" required />
+    <br>
+    <input id="msg" type="text" placeholder="Your message" required style="width: 70%;" />
+    <label><input type="checkbox" id="pin" /> Pin</label>
+    <button onclick="submitMsg()">Submit</button>
 
-  <h2 color="red">Pinned:</h2>
-  <div id="pinned"></div>
+    <h3 class="section-title">📍 Pinned Messages</h3>
+    <div id="pinned"></div>
 
-  <h2>All Notes:</h2>
-  <div id="all"></div>
+    <h3 class="section-title">📝 All Messages</h3>
+    <div id="all"></div>
+  </div>
 
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbyst6jClS_BULqyh5gndkPKeZW7gfhZstMbrWKuI4AKWd9dxLlo2V3ztyP3nJErC2HT/exec";
+    const scriptURL = "YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
 
     async function submitMsg() {
-      const msg = document.getElementById('msg').value;
+      const msg = document.getElementById('msg').value.trim();
+      const name = document.getElementById('username').value.trim() || "Anonymous";
       const pinned = document.getElementById('pin').checked;
+
+      if (!msg) {
+        alert("Please enter a message!");
+        return;
+      }
+
       await fetch(scriptURL, {
         method: 'POST',
-        body: new URLSearchParams({ message: msg, pinned: pinned })
+        body: new URLSearchParams({
+          message: `${msg} ~ ${name}`,
+          pinned: pinned
+        })
       });
-      loadMessages(); // refresh after submitting
+
+      document.getElementById('msg').value = '';
+      document.getElementById('pin').checked = false;
+      loadMessages();
     }
 
     async function loadMessages() {
@@ -39,16 +118,19 @@
       const messages = await res.json();
       const pinnedDiv = document.getElementById('pinned');
       const allDiv = document.getElementById('all');
+
       pinnedDiv.innerHTML = '';
       allDiv.innerHTML = '';
 
       messages.reverse().forEach(m => {
         const div = document.createElement('div');
-        div.className = 'msg' + (m.pinned === true || m.pinned === "TRUE" ? ' pinned' : '');
-        div.textContent = m.message;
-        if (m.pinned === true || m.pinned === "TRUE") {
-          pinnedDiv.appendChild(div.cloneNode(true));
-        }
+        div.className = 'message';
+        if (m.pinned === true || m.pinned === "TRUE") div.classList.add('pinned');
+
+        const [msg, name = "Anonymous"] = (m.message || "Untitled").split(" ~ ");
+        div.innerHTML = `<strong>${msg}</strong><div class="meta">by ${name}</div>`;
+
+        if (div.classList.contains('pinned')) pinnedDiv.appendChild(div.cloneNode(true));
         allDiv.appendChild(div);
       });
     }
@@ -57,4 +139,3 @@
   </script>
 </body>
 </html>
-
