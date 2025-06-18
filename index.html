@@ -2,11 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Notice Board</title>
+  <title>Digital Notice Board</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #dfe9f3, #ffffff);
+      font-family: 'Montserrat', sans-serif;
+      background: linear-gradient(135deg, #36a585, #ffffff);
       margin: 0;
       padding: 20px;
       color: #333;
@@ -54,24 +54,31 @@
       border-left: 4px solid #01489b;
       margin: 10px 0;
       padding: 10px;
-      border-radius: 6px;}
-    .pinned {border-left-color: #e63946; background-color: #fff4f4;}
-    .meta {font-size: 0.85rem; color: #666;}
+      border-radius: 6px;
+    }
+    .pinned {
+      border-left-color: #e63946;
+      background-color: #fff4f4;
+    }
+    .meta {
+      font-size: 0.85rem;
+      color: #666;
+    }
   </style>
 </head>
 <body>
   <header>
-    <h1>Shared Notice Board</h1>
-    <p>Post Notices and reminders here!</p>
+    <h1>Digital Notice Board</h1>
+    <p>Post and view messages from everyone</p>
   </header>
 
   <div class="container">
-    <h2>Post a Notice</h2>
+    <h2>Post a Message</h2>
     <input id="username" type="text" placeholder="Your name" required />
     <br>
     <input id="msg" type="text" placeholder="Your message" required style="width: 70%;" />
     <label><input type="checkbox" id="pin" /> Pin</label>
-    <button onclick="submitMsg()">Post</button>
+    <button onclick="submitMsg()">Submit</button>
 
     <h3 class="section-title">Pinned Notices</h3>
     <div id="pinned"></div>
@@ -88,18 +95,8 @@
       const name = document.getElementById('username').value.trim() || "Anonymous";
       const pinned = document.getElementById('pin').checked;
 
-      if (!msg) {
-        alert("Please enter a message!");
-        return;
-      }
-
-      await fetch(scriptURL, {
-        method: 'POST',
-        body: new URLSearchParams({
-          message: `${msg} ~ ${name}`,
-          pinned: pinned
-        })
-      });
+      if (!msg) {alert("Type a notice"); return;}
+      await fetch(scriptURL, {method: 'POST',body: new URLSearchParams({message: msg,name: name,pinned: pinned})});
 
       document.getElementById('msg').value = '';
       document.getElementById('pin').checked = false;
@@ -120,8 +117,7 @@
         div.className = 'message';
         if (m.pinned === true || m.pinned === "TRUE") div.classList.add('pinned');
 
-        const [msg, name = "Anonymous"] = (m.message || "Untitled").split(" ~ ");
-        div.innerHTML = `<strong>${msg}</strong><div class="meta">by ${name}</div>`;
+        div.innerHTML = `<strong>${m.message}</strong><div class="meta">by ${m.username || "Anonymous"}</div>`;
 
         if (div.classList.contains('pinned')) pinnedDiv.appendChild(div.cloneNode(true));
         allDiv.appendChild(div);
