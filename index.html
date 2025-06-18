@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Shared Message Board</title>
+  <title>Digital Reminder Board</title>
   <style>
     body { font-family: sans-serif; background: #eef; padding: 20px; }
     .msg { background: white; margin: 10px 0; padding: 10px; border-radius: 6px; }
@@ -9,16 +9,16 @@
   </style>
 </head>
 <body>
-  <h1>📌 Shared Messages</h1>
+  <h1>Digital Reminder Board</h1>
 
   <input id="msg" placeholder="Your message" />
-  <label><input type="checkbox" id="pin" /> Pin it</label>
-  <button onclick="submitMsg()">Submit</button>
+  <label><input type="checkbox" id="pin" /> Pin </label>
+  <button onclick="submitMsg()">Paste Up</button>
 
-  <h2>Pinned:</h2>
+  <h2 color="red">Pinned:</h2>
   <div id="pinned"></div>
 
-  <h2>All Messages:</h2>
+  <h2>All Notes:</h2>
   <div id="all"></div>
 
   <script>
