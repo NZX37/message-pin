@@ -1,1 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Shared Message Board</title>
+  <style>
+    body { font-family: sans-serif; background: #eef; padding: 20px; }
+    .msg { background: white; margin: 10px 0; padding: 10px; border-radius: 6px; }
+    .pinned { font-weight: bold; color: red; }
+  </style>
+</head>
+<body>
+  <h1>📌 Shared Messages</h1>
+
+  <input id="msg" placeholder="Your message" />
+  <label><input type="checkbox" id="pin" /> Pin it</label>
+  <button onclick="submitMsg()">Submit</button>
+
+  <h2>Pinned:</h2>
+  <div id="pinned"></div>
+
+  <h2>All Messages:</h2>
+  <div id="all"></div>
+
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycbyst6jClS_BULqyh5gndkPKeZW7gfhZstMbrWKuI4AKWd9dxLlo2V3ztyP3nJErC2HT/exec";
+
+    async function submitMsg() {
+      const msg = document.getElementById('msg').value;
+      const pinned = document.getElementById('pin').checked;
+      await fetch(scriptURL, {
+        method: 'POST',
+        body: new URLSearchParams({ message: msg, pinned: pinned })
+      });
+      loadMessages(); // refresh after submitting
+    }
+
+    async function loadMessages() {
+      const res = await fetch(scriptURL);
+      const messages = await res.json();
+      const pinnedDiv = document.getElementById('pinned');
+      const allDiv = document.getElementById('all');
+      pinnedDiv.innerHTML = '';
+      allDiv.innerHTML = '';
+
+      messages.reverse().forEach(m => {
+        const div = document.createElement('div');
+        div.className = 'msg' + (m.pinned === true || m.pinned === "TRUE" ? ' pinned' : '');
+        div.textContent = m.message;
+        if (m.pinned === true || m.pinned === "TRUE") {
+          pinnedDiv.appendChild(div.cloneNode(true));
+        }
+        allDiv.appendChild(div);
+      });
+    }
+
+    loadMessages();
+  </script>
+</body>
+</html>
 
