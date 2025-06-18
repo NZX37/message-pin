@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>📌 Message Board</title>
+  <title>📌 Notice Board</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -68,27 +68,27 @@
 </head>
 <body>
   <header>
-    <h1>📌 Shared Message Board</h1>
-    <p>Post and view messages from everyone</p>
+    <h1>📌 Shared Notice Board</h1>
+    <p>Post Notices and reminders here!</p>
   </header>
 
   <div class="container">
-    <h2>Post a Message</h2>
+    <h2>Post a Notice</h2>
     <input id="username" type="text" placeholder="Your name" required />
     <br>
     <input id="msg" type="text" placeholder="Your message" required style="width: 70%;" />
     <label><input type="checkbox" id="pin" /> Pin</label>
-    <button onclick="submitMsg()">Submit</button>
+    <button onclick="submitMsg()">Post</button>
 
-    <h3 class="section-title">📍 Pinned Messages</h3>
+    <h3 class="section-title">📍 Pinned Notices</h3>
     <div id="pinned"></div>
 
-    <h3 class="section-title">📝 All Messages</h3>
+    <h3 class="section-title">📝 All Notices</h3>
     <div id="all"></div>
   </div>
 
   <script>
-    const scriptURL = "YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
+    const scriptURL = "https://script.google.com/macros/s/AKfycbyst6jClS_BULqyh5gndkPKeZW7gfhZstMbrWKuI4AKWd9dxLlo2V3ztyP3nJErC2HT/exec";
 
     async function submitMsg() {
       const msg = document.getElementById('msg').value.trim();
