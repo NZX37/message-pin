@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>📌 Notice Board</title>
+  <title>Notice Board</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -54,21 +54,14 @@
       border-left: 4px solid #01489b;
       margin: 10px 0;
       padding: 10px;
-      border-radius: 6px;
-    }
-    .pinned {
-      border-left-color: #e63946;
-      background-color: #fff4f4;
-    }
-    .meta {
-      font-size: 0.85rem;
-      color: #666;
-    }
+      border-radius: 6px;}
+    .pinned {border-left-color: #e63946; background-color: #fff4f4;}
+    .meta {font-size: 0.85rem; color: #666;}
   </style>
 </head>
 <body>
   <header>
-    <h1>📌 Shared Notice Board</h1>
+    <h1>Shared Notice Board</h1>
     <p>Post Notices and reminders here!</p>
   </header>
 
@@ -80,10 +73,10 @@
     <label><input type="checkbox" id="pin" /> Pin</label>
     <button onclick="submitMsg()">Post</button>
 
-    <h3 class="section-title">📍 Pinned Notices</h3>
+    <h3 class="section-title">Pinned Notices</h3>
     <div id="pinned"></div>
 
-    <h3 class="section-title">📝 All Notices</h3>
+    <h3 class="section-title">All Notices</h3>
     <div id="all"></div>
   </div>
 
