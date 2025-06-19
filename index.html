@@ -6,7 +6,7 @@
   <style>
     body {
       font-family: 'Montserrat', sans-serif;
-      background: linear-gradient(135deg, #36a585, #ffffff);
+      background: linear-gradient(135deg, #dfe9f3, #ffffff);
       margin: 0;
       padding: 20px;
       color: #333;
@@ -34,14 +34,14 @@
       font-size: 16px;
     }
     button {
-      background-color: #6C44E9;
+      background-color: #d2373a;
       color: white;
       border: none;
       cursor: pointer;
       transition: background-color 0.3s;
     }
     button:hover {
-      background-color: #451BC6;
+      background-color: #672b2d;
     }
     .section-title {
       margin-top: 30px;
@@ -50,19 +50,33 @@
       padding-bottom: 5px;
     }
     .message {
-      background-color: #f5f9ff;
-      border-left: 4px solid #01489b;
+      background-color: #74bebd;
+      border-left: 4px solid #1a7878;
       margin: 10px 0;
       padding: 10px;
       border-radius: 6px;
     }
     .pinned {
-      border-left-color: #EB0415;
-      background-color: #F5DCDC;
+      border-left-color: #781A1A;
+      background-color: #BE7474;
     }
     .meta {
       font-size: 0.85rem;
       color: #666;
+    }
+    .dropdown-btn {
+      cursor: pointer;
+      background-color: #eee;
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+    .dropdown-content {
+      display: none;
+      margin-top: 10px;
+    }
+    .dropdown-content.show {
+      display: block;
     }
   </style>
 </head>
@@ -80,11 +94,14 @@
     <label><input type="checkbox" id="pin" /> Pin</label>
     <button onclick="submitMsg()">Submit</button>
 
-    <h3 class="section-title">Pinned Notices</h3>
+    <h3 class="section-title">Pinned Notice</h3>
     <div id="pinned"></div>
 
-    <h3 class="section-title">All Notices</h3>
-    <div id="all"></div>
+    <h3 class="section-title">Recent Notices</h3>
+    <div id="recent"></div>
+
+    <div class="dropdown-btn" onclick="toggleDropdown()">▶ Older Messages</div>
+    <div class="dropdown-content" id="older"></div>
   </div>
 
   <script>
@@ -95,32 +112,67 @@
       const name = document.getElementById('username').value.trim() || "Anonymous";
       const pinned = document.getElementById('pin').checked;
 
-      if (!msg) {alert("Type a notice"); return;}
-      await fetch(scriptURL, {method: 'POST',body: new URLSearchParams({message: msg,name: name,pinned: pinned})});
+      if (!msg) {
+        alert("Type a notice");
+        return;
+      }
+
+      await fetch(scriptURL, {
+        method: 'POST',
+        body: new URLSearchParams({
+          message: msg,
+          name: name,
+          pinned: pinned
+        })
+      });
 
       document.getElementById('msg').value = '';
       document.getElementById('pin').checked = false;
       loadMessages();
     }
 
+    function toggleDropdown() {
+      const content = document.getElementById('older');
+      content.classList.toggle("show");
+    }
+
+    function isOlderThanOneDay(dateStr) {
+      const now = new Date();
+      const msgDate = new Date(dateStr);
+      const diff = now - msgDate;
+      return diff > 24 * 60 * 60 * 1000;
+    }
+
     async function loadMessages() {
       const res = await fetch(scriptURL);
       const messages = await res.json();
+
       const pinnedDiv = document.getElementById('pinned');
-      const allDiv = document.getElementById('all');
+      const recentDiv = document.getElementById('recent');
+      const olderDiv = document.getElementById('older');
 
       pinnedDiv.innerHTML = '';
-      allDiv.innerHTML = '';
+      recentDiv.innerHTML = '';
+      olderDiv.innerHTML = '';
 
       messages.reverse().forEach(m => {
+        if (!m.message) return;
         const div = document.createElement('div');
         div.className = 'message';
         if (m.pinned === true || m.pinned === "TRUE") div.classList.add('pinned');
+        const user = m.username || "Anonymous";
+        const timestamp = new Date(m.timestamp).toLocaleString();
+        div.innerHTML = `<strong>${m.message}</strong><div class="meta">by ${user} • ${timestamp}</div>`;
 
-        div.innerHTML = `<strong>${m.message}</strong><div class="meta">by ${m.username || "Anonymous"}</div>`;
+        if (div.classList.contains('pinned')) {
+          pinnedDiv.appendChild(div.cloneNode(true));
+        }
 
-        if (div.classList.contains('pinned')) pinnedDiv.appendChild(div.cloneNode(true));
-        allDiv.appendChild(div);
+        if (isOlderThanOneDay(m.timestamp)) {
+          olderDiv.appendChild(div);
+        } else {
+          recentDiv.appendChild(div);
+        }
       });
     }
 
