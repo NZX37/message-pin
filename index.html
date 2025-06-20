@@ -49,12 +49,38 @@
       border-bottom: 2px solid #01489b;
       padding-bottom: 5px;
     }
-    .message { background-color: #f5f9ff; border-left: 4px solid #01489b; margin: 10px 0; padding: 10px; border-radius: 6px;}
-    .pinned { border-left-color: #e63946; background-color: #fff4f4;}
-    .meta { font-size: 0.85rem; color: #666;}
-    .dropdown-btn { cursor: pointer; background-color: #eee; padding: 10px; border-radius: 6px; margin-top: 10px;}
-    .dropdown-content {display: none; margin-top: 10px;}
-    .dropdown-content.show {display: block;}
+    .message {
+      background-color: #f5f9ff;
+      border-left: 4px solid #01489b;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 6px;
+    }
+    .pinned {
+      border-left-color: #e63946;
+      background-color: #fff4f4;
+    }
+    .meta {
+      font-size: 0.85rem;
+      color: #666;
+    }
+    .dropdown-btn {
+      cursor: pointer;
+      background-color: #eee;
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+    .dropdown-content {
+      display: none;
+      margin-top: 10px;
+    }
+    .dropdown-content.show {
+      display: block;
+    }
+    .bagged-style {
+      background: linear-gradient(to right, #b1ffd7, #feaedb, #b1ffd7);
+    }
   </style>
 </head>
 <body>
@@ -132,7 +158,9 @@
         const div = document.createElement('div');
         div.className = 'message';
         if (m.pinned === true || m.pinned === "TRUE") div.classList.add('pinned');
-        const user = m.username || "Anonymous";
+        if ((m.username || m.name || '').trim().toUpperCase() === 'BAGGED') div.classList.add('bagged-style');
+
+        const user = m.username || m.name || "Anonymous";
         const timestamp = new Date(m.timestamp).toLocaleString();
         div.innerHTML = `<strong>${m.message}</strong><div class="meta">by ${user} • ${timestamp}</div>`;
 
