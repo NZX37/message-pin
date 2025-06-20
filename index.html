@@ -37,7 +37,7 @@
     }
     .reply-toggle {
       margin-top: 8px;
-      background: #000;
+      background: #f0f0f0;
       padding: 5px 10px;
       border: none;
       cursor: pointer;
@@ -111,6 +111,13 @@
           parentID: parentID
         })
       });
+
+      if (parentID) {
+        document.getElementById(`reply-${parentID}`).value = '';
+      } else {
+        document.getElementById('msg').value = '';
+        document.getElementById('pin').checked = false;
+      }
 
       loadMessages();
     }
