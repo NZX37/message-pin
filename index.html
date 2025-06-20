@@ -21,14 +21,42 @@
     .message {
       margin: 15px 0;
       padding: 10px;
-      background: #c3f6f7;
-      border-left: 4px solid #1a7878;
+      border-left: 4px solid;
       border-radius: 5px;
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    .pinned {
+      background-color: #D69E98;
+      border-left-color: #A92617;
+    }
+    .recent {
+      background-color: #8BA0BE;
+      border-left-color: #314159;
+    }
+    .older {
+      background-color: #B5B5B5;
+      border-left-color: #111111;
+    }
+    .TPOT {
+      background-image: url('https://wallpapercave.com/wp/wp13307308.jpg');
+    }
+    .Winner {
+      background: linear-gradient(to right, #97a1ff, #abb3fe);
+    }
+    .BAGGED {
+      background: linear-gradient(to right, #b1ffd7, #feaedb, #b1ffd7);
     }
     .meta {
       font-size: 0.85em;
-      color: #666;
+      color: #fff;
       margin-top: 5px;
+      text-shadow: 0 0 3px #000;
+    }
+    strong {
+      color: #fff;
+      text-shadow: 0 0 3px #000;
     }
     input[type="text"] {
       width: 60%;
@@ -109,6 +137,10 @@
       return now - then > 86400000;
     }
 
+    function userImageClass(username) {
+      return ["TPOT", "Winner", "BAGGED"].includes(username) ? username : '';
+    }
+
     async function loadMessages() {
       const res = await fetch(scriptURL);
       const data = await res.json();
@@ -123,12 +155,14 @@
 
       data.reverse().forEach(m => {
         const container = m.pinned === true || m.pinned === "TRUE" ? pinnedDiv : isOlderThanOneDay(m.timestamp) ? olderDiv : recentDiv;
+        const timeClass = m.pinned === true || m.pinned === "TRUE" ? 'pinned' : isOlderThanOneDay(m.timestamp) ? 'older' : 'recent';
+        const userClass = userImageClass(m.name);
 
         const block = document.createElement('div');
-        block.className = 'message';
+        block.className = `message ${timeClass} ${userClass}`;
         block.innerHTML = `
           <strong>${m.message}</strong>
-          <div class="meta">by ${m.username} • ${new Date(m.timestamp).toLocaleString()}</div>
+          <div class="meta">by ${m.name} • ${new Date(m.timestamp).toLocaleString()}</div>
         `;
 
         container.appendChild(block);
