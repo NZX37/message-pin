@@ -4,24 +4,95 @@
   <meta charset="UTF-8">
   <title>Board</title>
   <style>
-    body { font-family: 'Bahnschrift', sans-serif; background: linear-gradient(135deg, #dfe9f3, #ffffff); margin: 0; padding: 20px; color: #333;}
-    header { background: #01489b; color: white; padding: 20px; border-radius: 8px; text-align: center;}
-    .container {max-width: 700px; margin: 30px auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);}
-    input, button { padding: 10px; margin: 5px; border-radius: 6px; border: 1px solid #ccc; font-size: 16px;}
-    button { background-color: #198c6e; color: white; border: none; cursor: pointer; transition: background-color 0.3s;}
-    button:hover { background-color: #146c56;}
-    .section-title {margin-top: 30px; font-size: 1.2rem; border-bottom: 2px solid #01489b; padding-bottom: 5px;}
-    .message { background-color: #f5f9ff; border-left: 4px solid #01489b; margin: 10px 0; padding: 10px; border-radius: 6px;}
-    .pinned {border-left-color: #e63946; background-color: #fff4f4;}
-    .meta {font-size: 0.85rem; color: #666;}
-    .dropdown-btn {cursor: pointer; background-color: #eee; padding: 10px; border-radius: 6px; margin-top: 10px;}
-    .dropdown-content { display: none; margin-top: 10px;}
-    .dropdown-content.show { display: block;}
-    .bagged-style {background: linear-gradient(to right, #b1ffd7, #feaedb, #b1ffd7);}
-    .uzi-style {background: linear-gradient(to right, #e5c64b, #aa4dd6);}
-    .gohjy-style {background: linear-gradient(to right, #F3AC1D, #BEB847);}
-    .NZX-style {background: linear-gradient(to right, #FED839, #FEA139);}
-    .haha-style {background: liear-gradient(to right, #CA3333, #CA9333, #CAA833, #33CA53, #3382CA, #8D33CA, #CA338D);}
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #dfe9f3, #ffffff);
+      margin: 0;
+      padding: 20px;
+      color: #333;
+    }
+    header {
+      background: #01489b;
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .container {
+      max-width: 700px;
+      margin: 30px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    button {
+      background-color: #198c6e;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #146c56;
+    }
+    .section-title {
+      margin-top: 30px;
+      font-size: 1.2rem;
+      border-bottom: 2px solid #01489b;
+      padding-bottom: 5px;
+    }
+    .message {
+      background-color: #f5f9ff;
+      border-left: 4px solid #01489b;
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 6px;
+    }
+    .pinned {
+      border-left-color: #e63946;
+      background-color: #fff4f4;
+    }
+    .meta {
+      font-size: 0.85rem;
+      color: #666;
+    }
+    .dropdown-btn {
+      cursor: pointer;
+      background-color: #eee;
+      padding: 10px;
+      border-radius: 6px;
+      margin-top: 10px;
+    }
+    .dropdown-content {
+      display: none;
+      margin-top: 10px;
+    }
+    .dropdown-content.show {
+      display: block;
+    }
+    .bagged-style {
+      background: linear-gradient(to right, #b1ffd7, #feaedb, #b1ffd7);
+    }
+    .uzi-style {
+      background: linear-gradient(to right, #e5c64b, #aa4dd6);
+    }
+    .gohjy-style {
+      background: linear-gradient(to right, #F3AC1D, #BEB847);
+    }
+    .nzx37-style {
+      background: linear-gradient(to right, #FED839, #FEA139);
+    }
+    .ahaha-style {
+      background: linear-gradient(135deg, #CA3333, #CA9333, #CAA833, #33CA53, #3382CA, #8D33CA, #CA338D);
+    }
   </style>
 </head>
 <body>
@@ -104,8 +175,8 @@
         if (username === 'BAGGED') div.classList.add('bagged-style');
         if (username === 'UZI') div.classList.add('uzi-style');
         if (username === '11GOHJY') div.classList.add('gohjy-style');
-        if (username === 'NZX37') div.classList.add('NZX-style');
-        if (username === 'ahahaha') div.classList.add('haha-style');
+        if (username === 'NZX37') div.classList.add('nzx37-style');
+        if (username === 'AHAHA') div.classList.add('ahaha-style');
 
         const user = m.username || m.name || "Anonymous";
         const timestamp = new Date(m.timestamp).toLocaleString();
