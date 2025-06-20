@@ -10,14 +10,68 @@
       padding: 20px;
       color: #333;
     }
-    .container { max-width: 750px; margin: auto; background: #41DDAE; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-    .message, .reply { margin: 15px 0; padding: 10px; background: #c3f6f7; border-left: 4px solid #1a7878; border-radius: 5px; }
-    .reply { margin-left: 30px; border-left-color: #FCC323; background: #E1D2A7; }
-    uop.meta { font-size: 0.85em; color: #666; margin-top: 5px; }
-    .reply-form { margin-left: 30px; margin-top: 10px; }
-    input[type="text"] { width: 60%; padding: 8px; margin: 4px; }
-    button { padding: 8px 12px; background: #d2373a; color: white; border: none; border-radius: 5px; cursor: pointer; }
-    button:hover { background: #672b2d; }
+    .container {
+      max-width: 750px;
+      margin: auto;
+      background: #41DDAE;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .message, .reply {
+      margin: 15px 0;
+      padding: 10px;
+      background: #c3f6f7;
+      border-left: 4px solid #1a7878;
+      border-radius: 5px;
+    }
+    .reply {
+      margin-left: 30px;
+      border-left-color: #FCC323;
+      background: #E1D2A7;
+    }
+    .meta {
+      font-size: 0.85em;
+      color: #666;
+      margin-top: 5px;
+    }
+    .reply-toggle {
+      margin-top: 8px;
+      background: #000;
+      padding: 5px 10px;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .reply-form, .replies {
+      display: none;
+      margin-left: 30px;
+    }
+    .visible {
+      display: block;
+    }
+    input[type="text"] {
+      width: 60%;
+      padding: 8px;
+      margin: 4px;
+    }
+    button {
+      padding: 8px 12px;
+      background: #d2373a;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #672b2d;
+    }
+    .section-title {
+      margin-top: 30px;
+      font-size: 1.2rem;
+      border-bottom: 2px solid #01489b;
+      padding-bottom: 5px;
+    }
   </style>
 </head>
 <body>
@@ -25,10 +79,17 @@
     <h2>Post a notice</h2>
     <input id="username" type="text" placeholder="Your name" />
     <input id="msg" type="text" placeholder="Your message" />
+    <label><input type="checkbox" id="pin" /> Pin</label>
     <button onclick="submitMsg()">Submit</button>
 
-    <h3>Messages</h3>
-    <div id="messages"></div>
+    <h3 class="section-title">Pinned Messages</h3>
+    <div id="pinned"></div>
+
+    <h3 class="section-title">Recent Messages</h3>
+    <div id="recent"></div>
+
+    <h3 class="section-title" onclick="toggleOlder()" style="cursor:pointer;">Older Messages ▼</h3>
+    <div id="older" style="display:none;"></div>
   </div>
 
   <script>
@@ -37,6 +98,7 @@
     async function submitMsg(parentID = "") {
       const msg = document.getElementById(parentID ? `reply-${parentID}` : 'msg').value.trim();
       const name = document.getElementById('username').value.trim() || "Anonymous";
+      const pinned = !parentID && document.getElementById('pin').checked;
 
       if (!msg) return alert("Message cannot be empty!");
 
@@ -45,7 +107,7 @@
         body: new URLSearchParams({
           message: msg,
           name: name,
-          pinned: false,
+          pinned: pinned,
           parentID: parentID
         })
       });
@@ -53,9 +115,33 @@
       loadMessages();
     }
 
+    function toggleReply(id) {
+      document.getElementById(`reply-form-${id}`).classList.toggle('visible');
+      document.getElementById(`replies-${id}`).classList.toggle('visible');
+    }
+
+    function toggleOlder() {
+      const olderDiv = document.getElementById('older');
+      olderDiv.style.display = olderDiv.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function isOlderThanOneDay(timestamp) {
+      const now = new Date();
+      const then = new Date(timestamp);
+      return now - then > 86400000;
+    }
+
     async function loadMessages() {
       const res = await fetch(scriptURL);
       const data = await res.json();
+
+      const pinnedDiv = document.getElementById('pinned');
+      const recentDiv = document.getElementById('recent');
+      const olderDiv = document.getElementById('older');
+
+      pinnedDiv.innerHTML = '';
+      recentDiv.innerHTML = '';
+      olderDiv.innerHTML = '';
 
       const messages = {};
       const replies = {};
@@ -70,31 +156,34 @@
         }
       });
 
-      const container = document.getElementById('messages');
-      container.innerHTML = '';
-
       Object.keys(messages).reverse().forEach(id => {
         const m = messages[id];
+        const container = m.pinned === true || m.pinned === "TRUE" ? pinnedDiv : isOlderThanOneDay(m.timestamp) ? olderDiv : recentDiv;
+
         const block = document.createElement('div');
         block.className = 'message';
         block.innerHTML = `
           <strong>${m.message}</strong>
           <div class="meta">by ${m.username} • ${new Date(m.timestamp).toLocaleString()}</div>
-          <div class="reply-form">
-            <input type="text" id="reply-${id}" placeholder="Reply..." />
-            <button onclick="submitMsg('${id}')">Reply</button>
+          <button class="reply-toggle" onclick="toggleReply('${id}')">Reply</button>
+          <div class="reply-form" id="reply-form-${id}">
+            <input type="text" id="reply-${id}" placeholder="Write a reply..." />
+            <button onclick="submitMsg('${id}')">Send</button>
           </div>
+          <div class="replies" id="replies-${id}"></div>
         `;
 
         if (replies[id]) {
           replies[id].forEach(r => {
-            const reply = document.createElement('div');
-            reply.className = 'reply';
-            reply.innerHTML = `
+            const replyDiv = document.createElement('div');
+            replyDiv.className = 'reply';
+            replyDiv.innerHTML = `
               <strong>${r.message}</strong>
               <div class="meta">by ${r.username} • ${new Date(r.timestamp).toLocaleString()}</div>
             `;
-            block.appendChild(reply);});}
+            block.querySelector(`#replies-${id}`).appendChild(replyDiv);
+          });
+        }
 
         container.appendChild(block);
       });
