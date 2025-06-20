@@ -1,178 +1,107 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="UTF-8">
-  <title>Digital Notice Board</title>
+  <title>Murder Drones is Good</title>
   <style>
     body {
       font-family: 'Bahnschrift', sans-serif;
-      background: linear-gradient(135deg, #23b5a8, #ffffff);
-      margin: 0;
+      background: liear-gradient(135deg, #23b5a8 #ffffff);
       padding: 20px;
       color: #333;
     }
-    header {
-      background: #01489b;
-      color: white;
-      padding: 20px;
-      border-radius: 8px;
-      text-align: center;
-    }
-    .container {
-      max-width: 700px;
-      margin: 30px auto;
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    input, button {
-      padding: 10px;
-      margin: 5px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-    }
-    button {
-      background-color: #d2373a;
-      color: white;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    button:hover {
-      background-color: #672b2d;
-    }
-    .section-title {
-      margin-top: 30px;
-      font-size: 1.2rem;
-      border-bottom: 2px solid #01489b;
-      padding-bottom: 5px;
-    }
-    .message {
-      background-color: #c3f6f7;
-      border-left: 4px solid #1a7878;
-      margin: 10px 0;
-      padding: 10px;
-      border-radius: 6px;
-    }
-    .pinned {
-      border-left-color: #781A1A;
-      background-color: #f7c3c3;
-    }
-    .meta {
-      font-size: 0.85rem;
-      color: #666;
-    }
-    .dropdown-btn {
-      cursor: pointer;
-      background-color: #eee;
-      padding: 10px;
-      border-radius: 6px;
-      margin-top: 10px;
-    }
-    .dropdown-content {
-      display: none;
-      margin-top: 10px;
-    }
-    .dropdown-content.show {
-      display: block;
-    }
+    .container { max-width: 750px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+    .message, .reply { margin: 15px 0; padding: 10px; background: #c3f6f7; border-left: 4px solid #1a7878; border-radius: 5px; }
+    .reply { margin-left: 30px; border-left-color: #aaa; background: #7a8482; }
+    uop.meta { font-size: 0.85em; color: #666; margin-top: 5px; }
+    .reply-form { margin-left: 30px; margin-top: 10px; }
+    input[type="text"] { width: 60%; padding: 8px; margin: 4px; }
+    button { padding: 8px 12px; background: #d2373a; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    button:hover { background: #672b2d; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Digital Notice Board</h1>
-    <p>Post and view notices from everyone</p>
-  </header>
-
   <div class="container">
-    <h2>Post a Notice</h2>
-    <input id="username" type="text" placeholder="Your name" required />
-    <br>
-    <input id="msg" type="text" placeholder="Your message" required style="width: 70%;" />
-    <label><input type="checkbox" id="pin" /> Pin</label>
+    <h2>Post a notice/h2>
+    <input id="username" type="text" placeholder="Your name" />
+    <input id="msg" type="text" placeholder="Your message" />
     <button onclick="submitMsg()">Submit</button>
 
-    <h3 class="section-title">Pinned Notice</h3>
-    <div id="pinned"></div>
-
-    <h3 class="section-title">Recent Notices</h3>
-    <div id="recent"></div>
-
-    <div class="dropdown-btn" onclick="toggleDropdown()">▶ Older Messages</div>
-    <div class="dropdown-content" id="older"></div>
+    <h3>Messages</h3>
+    <div id="messages"></div>
   </div>
 
   <script>
     const scriptURL = "https://script.google.com/macros/s/AKfycbyst6jClS_BULqyh5gndkPKeZW7gfhZstMbrWKuI4AKWd9dxLlo2V3ztyP3nJErC2HT/exec";
 
-    async function submitMsg() {
-      const msg = document.getElementById('msg').value.trim();
+    async function submitMsg(parentID = "") {
+      const msg = document.getElementById(parentID ? `reply-${parentID}` : 'msg').value.trim();
       const name = document.getElementById('username').value.trim() || "Anonymous";
-      const pinned = document.getElementById('pin').checked;
 
-      if (!msg) {
-        alert("Type a notice");
-        return;
-      }
+      if (!msg) return alert("Message cannot be empty!");
 
       await fetch(scriptURL, {
         method: 'POST',
         body: new URLSearchParams({
           message: msg,
           name: name,
-          pinned: pinned
+          pinned: false,
+          parentID: parentID
         })
       });
 
-      document.getElementById('msg').value = '';
-      document.getElementById('pin').checked = false;
       loadMessages();
-    }
-
-    function toggleDropdown() {
-      const content = document.getElementById('older');
-      content.classList.toggle("show");
-    }
-
-    function isOlderThanOneDay(dateStr) {
-      const now = new Date();
-      const msgDate = new Date(dateStr);
-      const diff = now - msgDate;
-      return diff > 24 * 60 * 60 * 1000;
     }
 
     async function loadMessages() {
       const res = await fetch(scriptURL);
-      const messages = await res.json();
+      const data = await res.json();
 
-      const pinnedDiv = document.getElementById('pinned');
-      const recentDiv = document.getElementById('recent');
-      const olderDiv = document.getElementById('older');
+      // Group by ID
+      const messages = {};
+      const replies = {};
 
-      pinnedDiv.innerHTML = '';
-      recentDiv.innerHTML = '';
-      olderDiv.innerHTML = '';
-
-      messages.reverse().forEach(m => {
-        if (!m.message) return;
-        const div = document.createElement('div');
-        div.className = 'message';
-        if (m.pinned === true || m.pinned === "TRUE") div.classList.add('pinned');
-        const user = m.username || "Anonymous";
-        const timestamp = new Date(m.timestamp).toLocaleString();
-        div.innerHTML = `<strong>${m.message}</strong><div class="meta">by ${user} • ${timestamp}</div>`;
-
-        if (div.classList.contains('pinned')) {
-          pinnedDiv.appendChild(div.cloneNode(true));
-        }
-
-        if (isOlderThanOneDay(m.timestamp)) {
-          olderDiv.appendChild(div);
+      data.forEach(m => {
+        const id = m.timestamp;
+        if (m.parentID) {
+          if (!replies[m.parentID]) replies[m.parentID] = [];
+          replies[m.parentID].push(m);
         } else {
-          recentDiv.appendChild(div);
+          messages[id] = m;
         }
+      });
+
+      const container = document.getElementById('messages');
+      container.innerHTML = '';
+
+      // Display messages
+      Object.keys(messages).reverse().forEach(id => {
+        const m = messages[id];
+        const block = document.createElement('div');
+        block.className = 'message';
+        block.innerHTML = `
+          <strong>${m.message}</strong>
+          <div class="meta">by ${m.username} • ${new Date(m.timestamp).toLocaleString()}</div>
+          <div class="reply-form">
+            <input type="text" id="reply-${id}" placeholder="Reply..." />
+            <button onclick="submitMsg('${id}')">Reply</button>
+          </div>
+        `;
+
+        // Add replies
+        if (replies[id]) {
+          replies[id].forEach(r => {
+            const reply = document.createElement('div');
+            reply.className = 'reply';
+            reply.innerHTML = `
+              <strong>${r.message}</strong>
+              <div class="meta">by ${r.username} • ${new Date(r.timestamp).toLocaleString()}</div>
+            `;
+            block.appendChild(reply);
+          });
+        }
+
+        container.appendChild(block);
       });
     }
 
