@@ -12,7 +12,7 @@
     }
     .container { max-width: 750px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
     .message, .reply { margin: 15px 0; padding: 10px; background: #c3f6f7; border-left: 4px solid #1a7878; border-radius: 5px; }
-    .reply { margin-left: 30px; border-left-color: #aaa; background: #7a8482; }
+    .reply { margin-left: 30px; border-left-color: #FCC323; background: #E1D2A7; }
     uop.meta { font-size: 0.85em; color: #666; margin-top: 5px; }
     .reply-form { margin-left: 30px; margin-top: 10px; }
     input[type="text"] { width: 60%; padding: 8px; margin: 4px; }
@@ -57,7 +57,6 @@
       const res = await fetch(scriptURL);
       const data = await res.json();
 
-      // Group by ID
       const messages = {};
       const replies = {};
 
@@ -74,7 +73,6 @@
       const container = document.getElementById('messages');
       container.innerHTML = '';
 
-      // Display messages
       Object.keys(messages).reverse().forEach(id => {
         const m = messages[id];
         const block = document.createElement('div');
@@ -88,7 +86,6 @@
           </div>
         `;
 
-        // Add replies
         if (replies[id]) {
           replies[id].forEach(r => {
             const reply = document.createElement('div');
@@ -97,9 +94,7 @@
               <strong>${r.message}</strong>
               <div class="meta">by ${r.username} • ${new Date(r.timestamp).toLocaleString()}</div>
             `;
-            block.appendChild(reply);
-          });
-        }
+            block.appendChild(reply);});}
 
         container.appendChild(block);
       });
