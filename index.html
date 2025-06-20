@@ -18,37 +18,17 @@
       border-radius: 10px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
-    .message, .reply {
+    .message {
       margin: 15px 0;
       padding: 10px;
       background: #c3f6f7;
       border-left: 4px solid #1a7878;
       border-radius: 5px;
     }
-    .reply {
-      margin-left: 30px;
-      border-left-color: #FCC323;
-      background: #E1D2A7;
-    }
     .meta {
       font-size: 0.85em;
       color: #666;
       margin-top: 5px;
-    }
-    .reply-toggle {
-      margin-top: 8px;
-      background: #f0f0f0;
-      padding: 5px 10px;
-      border: none;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-    .reply-form, .replies {
-      display: none;
-      margin-left: 30px;
-    }
-    .visible {
-      display: block;
     }
     input[type="text"] {
       width: 60%;
@@ -95,10 +75,10 @@
   <script>
     const scriptURL = "https://script.google.com/macros/s/AKfycbyst6jClS_BULqyh5gndkPKeZW7gfhZstMbrWKuI4AKWd9dxLlo2V3ztyP3nJErC2HT/exec";
 
-    async function submitMsg(parentID = "") {
-      const msg = document.getElementById(parentID ? `reply-${parentID}` : 'msg').value.trim();
+    async function submitMsg() {
+      const msg = document.getElementById('msg').value.trim();
       const name = document.getElementById('username').value.trim() || "Anonymous";
-      const pinned = !parentID && document.getElementById('pin').checked;
+      const pinned = document.getElementById('pin').checked;
 
       if (!msg) return alert("Message cannot be empty!");
 
@@ -108,23 +88,14 @@
           message: msg,
           name: name,
           pinned: pinned,
-          parentID: parentID
+          parentID: ""
         })
       });
 
-      if (parentID) {
-        document.getElementById(`reply-${parentID}`).value = '';
-      } else {
-        document.getElementById('msg').value = '';
-        document.getElementById('pin').checked = false;
-      }
+      document.getElementById('msg').value = '';
+      document.getElementById('pin').checked = false;
 
       loadMessages();
-    }
-
-    function toggleReply(id) {
-      document.getElementById(`reply-form-${id}`).classList.toggle('visible');
-      document.getElementById(`replies-${id}`).classList.toggle('visible');
     }
 
     function toggleOlder() {
@@ -150,21 +121,7 @@
       recentDiv.innerHTML = '';
       olderDiv.innerHTML = '';
 
-      const messages = {};
-      const replies = {};
-
-      data.forEach(m => {
-        const id = m.timestamp;
-        if (m.parentID) {
-          if (!replies[m.parentID]) replies[m.parentID] = [];
-          replies[m.parentID].push(m);
-        } else {
-          messages[id] = m;
-        }
-      });
-
-      Object.keys(messages).reverse().forEach(id => {
-        const m = messages[id];
+      data.reverse().forEach(m => {
         const container = m.pinned === true || m.pinned === "TRUE" ? pinnedDiv : isOlderThanOneDay(m.timestamp) ? olderDiv : recentDiv;
 
         const block = document.createElement('div');
@@ -172,25 +129,7 @@
         block.innerHTML = `
           <strong>${m.message}</strong>
           <div class="meta">by ${m.username} • ${new Date(m.timestamp).toLocaleString()}</div>
-          <button class="reply-toggle" onclick="toggleReply('${id}')">Reply</button>
-          <div class="reply-form" id="reply-form-${id}">
-            <input type="text" id="reply-${id}" placeholder="Write a reply..." />
-            <button onclick="submitMsg('${id}')">Send</button>
-          </div>
-          <div class="replies" id="replies-${id}"></div>
         `;
-
-        if (replies[id]) {
-          replies[id].forEach(r => {
-            const replyDiv = document.createElement('div');
-            replyDiv.className = 'reply';
-            replyDiv.innerHTML = `
-              <strong>${r.message}</strong>
-              <div class="meta">by ${r.username} • ${new Date(r.timestamp).toLocaleString()}</div>
-            `;
-            block.querySelector(`#replies-${id}`).appendChild(replyDiv);
-          });
-        }
 
         container.appendChild(block);
       });
