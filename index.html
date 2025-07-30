@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="initial-scale=1.0, width=device-width">
   <title>Board</title>
   <link href="../style.css" rel="stylesheet">
 </head>
@@ -90,7 +91,13 @@
 
         const user = m.username || m.name || "Anonymous";
         const timestamp = new Date(m.timestamp).toLocaleString();
-        div.innerHTML = `<strong>${m.message}</strong><div class="meta">by ${user} • ${timestamp}</div>`;
+
+        const msgDiv = document.createElement("strong");
+        msgDiv.innerText = m.message;
+        const metaDiv = document.createElement("div");
+        metaDiv.classList.add("meta");
+        metaDiv.textContent = `by ${user} • ${timestamp}`;
+        div.append(msgDiv, metaDiv);
 
         if (div.classList.contains('pinned')) {
           pinnedDiv.appendChild(div.cloneNode(true));
