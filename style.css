@@ -74,7 +74,7 @@
     }
     .scp-style {
       background: linear-gradient(to right, #000000, #000000)
-      text-color: #ffffff
+      color: #ffffff
     }
     .bagged-style {
       background: linear-gradient(to right, #b1ffd7, #feaedb, #b1ffd7);
