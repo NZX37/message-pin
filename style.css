@@ -91,3 +91,18 @@
     .ahaha-style {
       background: linear-gradient(135deg, #CA3333, #CA9333, #CAA833, #33CA53, #3382CA, #8D33CA, #CA338D);
     }
+    .one-style {
+      background: linear-gradient(to right, #5a7cf0, #0808ff);
+    }
+    .two-style {
+      background: linear-gradient(to right, #43c54f, #009200);
+    }
+    .three-style {
+      background: linear-gradient(to right, #fe5754, #ff1e09);
+    }
+    .four-style {
+      background: linear-gradient(to right, #3780d1, #1f33a8);
+    }
+    .five-style {
+      background: linear-gradient(to right, #a362a5, #cd4496);
+    }
