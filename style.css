@@ -73,8 +73,8 @@
       display: block;
     }
     .scp-style {
-      background: linear-gradient(to right, #000000, #000000)
-      color: #ffffff
+      background: linear-gradient(to right, #000000, #000000);
+      color: #ffffff;
     }
     .bagged-style {
       background: linear-gradient(to right, #b1ffd7, #feaedb, #b1ffd7);
