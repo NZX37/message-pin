@@ -16,7 +16,7 @@ function setupProfile() {
 
   if (username !== 'guest') {
     document.getElementById('logoutBtn').style.display = '';
-    fetch(`${BACKEND_URL}?action=getColor&username=${encodeURIComponent(username)}`)
+    fetch(`${'https://script.google.com/a/macros/students.edu.sg/s/AKfycbwvTmvUmo-lNBM5fCwZ3bD0whOVHy40FUUSuFQbeMUMWW0vhOdpxlT_pmYCLzCsenM5GQ/exec'}?action=getColor&username=${encodeURIComponent(username)}`)
       .then(res => res.json())
       .then(data => {
         if (data.color) profileName.style.color = data.color;
@@ -33,7 +33,7 @@ function setupProfile() {
 }
 
 async function loadMessages() {
-  const res = await fetch(`${BACKEND_URL}?action=getMessages`);
+  const res = await fetch(`${'https://script.google.com/a/macros/students.edu.sg/s/AKfycbwvTmvUmo-lNBM5fCwZ3bD0whOVHy40FUUSuFQbeMUMWW0vhOdpxlT_pmYCLzCsenM5GQ/exec'}?action=getMessages`);
   const messages = await res.json();
   const list = document.getElementById('messages');
   list.innerHTML = '';
@@ -58,7 +58,7 @@ function setupForm() {
     }
     const content = document.getElementById('messageInput').value.trim();
     if (!content) return;
-    await fetch(`${BACKEND_URL}?action=sendMessage`, {
+    await fetch(`${'https://script.google.com/a/macros/students.edu.sg/s/AKfycbwvTmvUmo-lNBM5fCwZ3bD0whOVHy40FUUSuFQbeMUMWW0vhOdpxlT_pmYCLzCsenM5GQ/exec'}?action=sendMessage`, {
       method: 'POST',
       body: JSON.stringify({ username, content }),
       headers: { 'Content-Type': 'application/json' }
