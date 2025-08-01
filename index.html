@@ -2,122 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="initial-scale=1.0, width=device-width">
-  <title>Board</title>
-  <link href="style.css" rel="stylesheet">
+  <title>Message Pin App</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
 </head>
 <body>
   <header>
-    <h1>Digital Notice Board</h1>
-    <p>Type your message then send. Takes a while so if any problem you can reload.</p>
+    <span>Welcome, <span id="profileName">guest</span>!</span>
+    <button id="logoutBtn" style="display:none;">Logout</button>
   </header>
-  <div class="container">
-    <h2>Post a Notice</h2>
-    <input id="username" type="text" placeholder="Your name" required />
-    <br>
-    <input id="msg" type="text" placeholder="Your notice" required style="width: 70%;" />
-    <label><input type="checkbox" id="pin" /> Pin</label>
-    <button onclick="submitMsg()">Submit</button>
-    <h3 class="section-title">Pinned Notice</h3>
-    <div id="pinned"></div>
-    <h3 class="section-title">Recent Notices</h3>
-    <div id="recent"></div>
-    <div class="dropdown-btn" onclick="toggleDropdown()">▶ Older Messages</div>
-    <div class="dropdown-content" id="older"></div>
-  </div>
-<script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbyst6jClS_BULqyh5gndkPKeZW7gfhZstMbrWKuI4AKWd9dxLlo2V3ztyP3nJErC2HT/exec";
 
-    async function submitMsg() {
-      const msg = document.getElementById('msg').value.trim();
-      const name = document.getElementById('username').value.trim() || "Anonymous";
-      const pinned = document.getElementById('pin').checked;
-
-      if (!msg) {
-        alert("Please enter a message!");
-        return;
-      }
-
-      await fetch(scriptURL, {
-        method: 'POST',
-        body: new URLSearchParams({
-          message: msg,
-          name: name,
-          pinned: pinned
-        })
-      });
-
-      document.getElementById('msg').value = '';
-      document.getElementById('pin').checked = false;
-      loadMessages();
-    }
-
-    function toggleDropdown() {
-      const content = document.getElementById('older');
-      content.classList.toggle("show");
-    }
-
-    function isOlderThanOneDay(dateStr) {
-      const now = new Date();
-      const msgDate = new Date(dateStr);
-      const diff = now - msgDate;
-      return diff > 24 * 60 * 60 * 1000;
-    }
-
-    async function loadMessages() {
-      const res = await fetch(scriptURL);
-      const messages = await res.json();
-
-      const pinnedDiv = document.getElementById('pinned');
-      const recentDiv = document.getElementById('recent');
-      const olderDiv = document.getElementById('older');
-
-      pinnedDiv.innerHTML = '';
-      recentDiv.innerHTML = '';
-      olderDiv.innerHTML = '';
-
-      messages.reverse().forEach(m => {
-        if (!m.message) return;
-        const div = document.createElement('div');
-        div.className = 'message';
-        if (m.pinned === true || m.pinned === "TRUE") div.classList.add('pinned');
-
-        const username = (m.username || m.name || '').trim().toUpperCase();
-        if (username === 'BAGGED') div.classList.add('bagged-style');
-        if (username === 'UZI') div.classList.add('uzi-style');
-        if (username === 'CICADA') div.classList.add('gohjy-style');
-        if (username === 'NZX37') div.classList.add('nzx37-style');
-        if (username === 'AHAHA') div.classList.add('ahaha-style');
-        if (username === 'SCP') div.classList.add('scp-style');
-        if (username === 'ONE') div.classList.add('one-style');
-        if (username === 'TWO') div.classList.add('two-style');
-        if (username === 'THREE') div.classList.add('three-style');
-        if (username === 'FOUR') div.classList.add('four-style');
-        if (username === 'FIVE') div.classList.add('five-style');
-        
-        const user = m.username || m.name || "Anonymous";
-        const timestamp = new Date(m.timestamp).toLocaleString();
-
-        const msgDiv = document.createElement("strong");
-        msgDiv.innerText = m.message;
-        const metaDiv = document.createElement("div");
-        metaDiv.classList.add("meta");
-        metaDiv.textContent = `by ${user} • ${timestamp}`;
-        div.append(msgDiv, metaDiv);
-
-        if (div.classList.contains('pinned')) {
-          pinnedDiv.appendChild(div.cloneNode(true));
-        }
-
-        if (isOlderThanOneDay(m.timestamp)) {
-          olderDiv.appendChild(div);
-        } else {
-          recentDiv.appendChild(div);
-        }
-      });
-    }
-
-    loadMessages();
-  </script>
+  <main>
+    <ul id="messages"></ul>
+    <form id="sendForm">
+      <input id="messageInput" type="text" placeholder="Type your message..." required>
+      <button type="submit">Send</button>
+    </form>
+    <div id="guestNotice" style="color:red; display:none;">
+      Only registered users can send messages or use special colors. <a href="login.html">Login/Sign up</a>
+    </div>
+  </main>
 </body>
 </html>
