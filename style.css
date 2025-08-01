@@ -1,76 +1,112 @@
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #dfe9f3, #ffffff);
-      margin: 0;
-      padding: 20px;
-      color: #333;
-    }
-    header {
-      background: #01489b;
-      color: white;
-      padding: 20px;
-      border-radius: 8px;
-      text-align: center;
-    }
-    .container {
-      max-width: 700px;
-      margin: 30px auto;
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    input, button {
-      padding: 10px;
-      margin: 5px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-    }
-    button {
-      background-color: #198c6e;
-      color: white;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-    button:hover {
-      background-color: #146c56;
-    }
-    .section-title {
-      margin-top: 30px;
-      font-size: 1.2rem;
-      border-bottom: 2px solid #01489b;
-      padding-bottom: 5px;
-    }
-    .message {
-      background-color: #f5f9ff;
-      border-left: 4px solid #01489b;
-      margin: 10px 0;
-      padding: 10px;
-      border-radius: 6px;
-    }
-    .pinned {
-      border-left-color: #e63946;
-      background-color: #fff4f4;
-    }
-    .meta {
-      font-size: 0.85rem;
-      color: #666;
-    }
-    .dropdown-btn {
-      cursor: pointer;
-      background-color: #eee;
-      padding: 10px;
-      border-radius: 6px;
-      margin-top: 10px;
-    }
-    .dropdown-content {
-      display: none;
-      margin-top: 10px;
-    }
-    .dropdown-content.show {
-      display: block;
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f7f8fa;
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background: #3a7ca5;
+  color: #fff;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+#profileName {
+  font-weight: bold;
+  transition: color 0.3s;
+}
+
+#logoutBtn {
+  background: #e05353;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-left: 1rem;
+  transition: background 0.2s;
+}
+#logoutBtn:hover {
+  background: #b93434;
+}
+
+main {
+  max-width: 500px;
+  margin: 2rem auto;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  padding: 2rem;
+}
+
+#messages {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+#messages li {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #efefef;
+  word-break: break-word;
+  font-size: 1.05rem;
+  transition: background 0.2s;
+}
+
+#messages li:last-child {
+  border-bottom: none;
+}
+
+form#sendForm {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+#messageInput {
+  flex: 1;
+  padding: 0.6rem;
+  border: 1px solid #cfd8dc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+#sendForm button {
+  background: #3a7ca5;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+#sendForm button:hover {
+  background: #285575;
+}
+
+#guestNotice {
+  margin-top: 1rem;
+  background: #fff8e1;
+  border-left: 4px solid #ffa726;
+  padding: 1rem;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+a {
+  color: #3a7ca5;
+  text-decoration: underline;
+}
+a:hover {
+  color: #285575;
+}
     }
     .scp-style {
       background: linear-gradient(to right, #000000, #000000);
