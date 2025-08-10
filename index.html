@@ -5,36 +5,110 @@
   <meta name="viewport" content="initial-scale=1.0, width=device-width">
   <title>Board</title>
   <link href="style.css" rel="stylesheet">
+  <style>
+    .message {
+      border-radius: 8px;
+      margin-bottom: 10px;
+      padding: 12px;
+      color: #fff;
+      font-size: 1.05em;
+      /* background-color is set in JS based on subject */
+    }
+    .due-date {
+      font-weight: bold;
+      margin-right: 12px;
+    }
+    .subject-name {
+      font-style: italic;
+      margin-left: 8px;
+      opacity: 0.9;
+    }
+  </style>
 </head>
 <body>
   <header>
     <h1>Digital Notice Board</h1>
-    <p>Type your message then send. Takes a while so if any problem you can reload.</p>
+    <p>Type your notice, select a subject and due date, then send. Notices show as "Due" or "Past Due" based on the date.</p>
   </header>
   <div class="container">
     <h2>Post a Notice</h2>
-    <input id="username" type="text" placeholder="Your name" required />
-    <br>
     <input id="msg" type="text" placeholder="Your notice" required style="width: 70%;" />
-    <label><input type="checkbox" id="pin" /> Pin</label>
+    <select id="subject" required>
+      <option value="" disabled selected>Select subject</option>
+      <option value="Math 1">Math 1</option>
+      <option value="EL">EL</option>
+      <option value="DV(D)">DV(D)</option>
+      <option value="DV(E)">DV(E)</option>
+      <option value="Art">Art</option>
+      <option value="HCL">HCL</option>
+      <option value="CL">CL</option>
+      <option value="Malay">Malay</option>
+      <option value="Hindi">Hindi</option>
+      <option value="Physics">Physics</option>
+      <option value="Chemistry">Chemistry</option>
+      <option value="Biology">Biology</option>
+      <option value="Math 2">Math 2</option>
+      <option value="PE">PE</option>
+      <option value="Humanities">Humanities</option>
+      <option value="CS">CS</option>
+      <option value="Math Oly">Math Oly</option>
+      <option value="Math Oly V">Math Oly V</option>
+      <option value="FwFractals">FwFractals</option>
+      <option value="Robotics">Robotics</option>
+      <option value="Third Lang">Third Lang</option>
+    </select>
+    <input id="dueDate" type="date" required />
     <button onclick="submitMsg()">Submit</button>
-    <h3 class="section-title">Pinned Notice</h3>
-    <div id="pinned"></div>
-    <h3 class="section-title">Recent Notices</h3>
-    <div id="recent"></div>
+    <h3 class="section-title">Due Notices</h3>
+    <div id="due"></div>
+    <h3 class="section-title">Past Due Notices</h3>
+    <div id="pastdue"></div>
     <div class="dropdown-btn" onclick="toggleDropdown()">▶ Older Messages</div>
     <div class="dropdown-content" id="older"></div>
   </div>
 <script>
     const scriptURL = "https://script.google.com/macros/s/AKfycbyst6jClS_BULqyh5gndkPKeZW7gfhZstMbrWKuI4AKWd9dxLlo2V3ztyP3nJErC2HT/exec";
 
+    // Map subject to background colors
+    const subjectColors = {
+      "Math 1": "#1f77b4",
+      "EL": "#ff7f0e",
+      "DV(D)": "#2ca02c",
+      "DV(E)": "#d62728",
+      "Art": "#9467bd",
+      "HCL": "#8c564b",
+      "CL": "#e377c2",
+      "Malay": "#bcbd22",
+      "Hindi": "#17becf",
+      "Physics": "#0074D9",
+      "Chemistry": "#FF4136",
+      "Biology": "#2ECC40",
+      "Math 2": "#B10DC9",
+      "PE": "#FF851B",
+      "Humanities": "#7FDBFF",
+      "CS": "#39CCCC",
+      "Math Oly": "#F012BE",
+      "Math Oly V": "#85144b",
+      "FwFractals": "#3D9970",
+      "Robotics": "#111111",
+      "Third Lang": "#AAAAAA"
+    };
+
     async function submitMsg() {
       const msg = document.getElementById('msg').value.trim();
-      const name = document.getElementById('username').value.trim() || "Anonymous";
-      const pinned = document.getElementById('pin').checked;
+      const dueDate = document.getElementById('dueDate').value;
+      const subject = document.getElementById('subject').value;
 
       if (!msg) {
-        alert("Please enter a message!");
+        alert("Please enter a notice!");
+        return;
+      }
+      if (!subject) {
+        alert("Please select a subject!");
+        return;
+      }
+      if (!dueDate) {
+        alert("Please select a due date!");
         return;
       }
 
@@ -42,13 +116,14 @@
         method: 'POST',
         body: new URLSearchParams({
           message: msg,
-          name: name,
-          pinned: pinned
+          dueDate: dueDate,
+          subject: subject
         })
       });
 
       document.getElementById('msg').value = '';
-      document.getElementById('pin').checked = false;
+      document.getElementById('dueDate').value = '';
+      document.getElementById('subject').selectedIndex = 0;
       loadMessages();
     }
 
@@ -64,55 +139,65 @@
       return diff > 24 * 60 * 60 * 1000;
     }
 
+    function isPastDue(dueDateStr) {
+      if (!dueDateStr) return false;
+      const now = new Date();
+      // Set to end of day for due date
+      const due = new Date(dueDateStr);
+      due.setHours(23, 59, 59, 999);
+      return now > due;
+    }
+
+    function getSubjectColor(subject) {
+      return subjectColors[subject] || "#888";
+    }
+
     async function loadMessages() {
       const res = await fetch(scriptURL);
       const messages = await res.json();
 
-      const pinnedDiv = document.getElementById('pinned');
-      const recentDiv = document.getElementById('recent');
+      const dueDiv = document.getElementById('due');
+      const pastdueDiv = document.getElementById('pastdue');
       const olderDiv = document.getElementById('older');
 
-      pinnedDiv.innerHTML = '';
-      recentDiv.innerHTML = '';
+      dueDiv.innerHTML = '';
+      pastdueDiv.innerHTML = '';
       olderDiv.innerHTML = '';
 
       messages.reverse().forEach(m => {
         if (!m.message) return;
+        const dueDate = m.dueDate || m.duedate || '';
+        const subject = m.subject || '';
+        const assignment = m.message || '';
+
+        // Create the notice div
         const div = document.createElement('div');
         div.className = 'message';
-        if (m.pinned === true || m.pinned === "TRUE") div.classList.add('pinned');
+        div.style.backgroundColor = getSubjectColor(subject);
 
-        const username = (m.username || m.name || '').trim().toUpperCase();
-        if (username === 'BAGGED') div.classList.add('bagged-style');
-        if (username === 'UZI') div.classList.add('uzi-style');
-        if (username === 'CICADA') div.classList.add('gohjy-style');
-        if (username === 'NZX37') div.classList.add('nzx37-style');
-        if (username === 'AHAHA') div.classList.add('ahaha-style');
-        if (username === 'SCP') div.classList.add('scp-style');
-        if (username === 'ONE') div.classList.add('one-style');
-        if (username === 'TWO') div.classList.add('two-style');
-        if (username === 'THREE') div.classList.add('three-style');
-        if (username === 'FOUR') div.classList.add('four-style');
-        if (username === 'FIVE') div.classList.add('five-style');
-        
-        const user = m.username || m.name || "Anonymous";
-        const timestamp = new Date(m.timestamp).toLocaleString();
+        // Show only due date, assignment, and subject
+        const dueDivSpan = document.createElement('span');
+        dueDivSpan.className = "due-date";
+        dueDivSpan.textContent = dueDate;
 
-        const msgDiv = document.createElement("strong");
-        msgDiv.innerText = m.message;
-        const metaDiv = document.createElement("div");
-        metaDiv.classList.add("meta");
-        metaDiv.textContent = `by ${user} • ${timestamp}`;
-        div.append(msgDiv, metaDiv);
+        const assignmentSpan = document.createElement('span');
+        assignmentSpan.textContent = assignment;
 
-        if (div.classList.contains('pinned')) {
-          pinnedDiv.appendChild(div.cloneNode(true));
-        }
+        const subjectSpan = document.createElement('span');
+        subjectSpan.className = "subject-name";
+        subjectSpan.textContent = subject;
 
-        if (isOlderThanOneDay(m.timestamp)) {
-          olderDiv.appendChild(div);
+        // Compose the notice
+        div.append(dueDivSpan, assignmentSpan, subjectSpan);
+
+        // Place in due/past due/older sections
+        if (isPastDue(dueDate)) {
+          pastdueDiv.appendChild(div.cloneNode(true));
         } else {
-          recentDiv.appendChild(div);
+          dueDiv.appendChild(div.cloneNode(true));
+        }
+        if (m.timestamp && isOlderThanOneDay(m.timestamp)) {
+          olderDiv.appendChild(div);
         }
       });
     }
