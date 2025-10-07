@@ -29,6 +29,7 @@
   <header>
     <h1>Digital Notice Board</h1>
     <p>Type your notice, select a subject and due date, then send. Notices show as "Due" or "Past Due" based on the date.</p>
+    <p>Example Notice: "106: Finish Mission 3</p>
   </header>
   <div class="container">
     <h2>Post a Notice</h2>
@@ -58,7 +59,7 @@
       <option value="Third Lang">Third Lang</option>
     </select>
     <input id="dueDate" type="date" required />
-    <button onclick="submitMsg()">Submit</button>
+    <button id="submitBtn" onclick="submitMsg()">Submit</button>
     <h3 class="section-title">Due Notices</h3>
     <div id="due"></div>
     <h3 class="section-title">Past Due Notices</h3>
@@ -69,7 +70,6 @@
 <script>
     const scriptURL = "https://script.google.com/macros/s/AKfycbyst6jClS_BULqyh5gndkPKeZW7gfhZstMbrWKuI4AKWd9dxLlo2V3ztyP3nJErC2HT/exec";
 
-    // Map subject to background colors
     const subjectColors = {
       "Math 1": "#1f77b4",
       "EL": "#ff7f0e",
@@ -87,10 +87,7 @@
       "PE": "#FF851B",
       "Humanities": "#7FDBFF",
       "CS": "#39CCCC",
-      "Math Oly": "#F012BE",
-      "Math Oly V": "#85144b",
-      "FwFractals": "#3D9970",
-      "Robotics": "#111111",
+      "Electives": "#F012BE",
       "Third Lang": "#AAAAAA"
     };
 
@@ -112,6 +109,11 @@
         return;
       }
 
+  button.disabled = true;
+  button.textContent = "Loading…";
+  button.style.backgroundColor = "#ccc";
+  button.style.cursor = "not-allowed";
+      
       await fetch(scriptURL, {
         method: 'POST',
         body: new URLSearchParams({
@@ -170,12 +172,10 @@
         const subject = m.subject || '';
         const assignment = m.message || '';
 
-        // Create the notice div
         const div = document.createElement('div');
         div.className = 'message';
         div.style.backgroundColor = getSubjectColor(subject);
 
-        // Show only due date, assignment, and subject
         const dueDivSpan = document.createElement('span');
         dueDivSpan.className = "due-date";
         dueDivSpan.textContent = dueDate;
@@ -187,10 +187,8 @@
         subjectSpan.className = "subject-name";
         subjectSpan.textContent = subject;
 
-        // Compose the notice
         div.append(dueDivSpan, assignmentSpan, subjectSpan);
 
-        // Place in due/past due/older sections
         if (isPastDue(dueDate)) {
           pastdueDiv.appendChild(div.cloneNode(true));
         } else {
