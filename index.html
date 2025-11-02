@@ -3,204 +3,489 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="initial-scale=1.0, width=device-width">
-  <title>Board</title>
-  <link href="style.css" rel="stylesheet">
+  <title>Message Board</title>
   <style>
-    .message {
-      border-radius: 8px;
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .auth-container, .app-container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    
+    h1 {
+      color: #333;
       margin-bottom: 10px;
+      text-align: center;
+    }
+    
+    h2 {
+      color: #555;
+      margin: 20px 0 15px 0;
+      font-size: 1.3em;
+    }
+    
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 0.95em;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #555;
+      font-weight: 500;
+    }
+    
+    input[type="text"], input[type="password"], textarea {
+      width: 100%;
       padding: 12px;
-      color: #fff;
-      font-size: 1.05em;
-      /* background-color is set in JS based on subject */
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1em;
+      transition: border-color 0.3s;
     }
-    .due-date {
-      font-weight: bold;
-      margin-right: 12px;
+    
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: #667eea;
     }
-    .subject-name {
-      font-style: italic;
-      margin-left: 8px;
-      opacity: 0.9;
+    
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+      font-family: inherit;
+    }
+    
+    button {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 10px;
+    }
+    
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+    
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .toggle-auth {
+      text-align: center;
+      margin-top: 20px;
+      color: #666;
+    }
+    
+    .toggle-auth a {
+      color: #667eea;
+      cursor: pointer;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    
+    .toggle-auth a:hover {
+      text-decoration: underline;
+    }
+    
+    .message {
+      background: #f8f9fa;
+      border-left: 4px solid #667eea;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 12px;
+    }
+    
+    .message-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    
+    .username {
+      font-weight: 700;
+      color: #667eea;
+      font-size: 0.95em;
+    }
+    
+    .timestamp {
+      font-size: 0.85em;
+      color: #999;
+    }
+    
+    .message-text {
+      color: #333;
+      line-height: 1.5;
+      word-wrap: break-word;
+    }
+    
+    .user-info {
+      background: #f0f0f0;
+      padding: 10px 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .user-info span {
+      color: #555;
+      font-weight: 500;
+    }
+    
+    .logout-btn {
+      background: #dc3545;
+      padding: 6px 12px;
+      font-size: 0.9em;
+      width: auto;
+      margin: 0;
+    }
+    
+    .logout-btn:hover {
+      background: #c82333;
+    }
+    
+    .messages-container {
+      max-height: 500px;
+      overflow-y: auto;
+      margin-top: 20px;
+    }
+    
+    .error {
+      background: #fee;
+      border: 1px solid #fcc;
+      color: #c00;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 15px;
+    }
+    
+    .hidden {
+      display: none;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>Digital Notice Board</h1>
-    <p>Type your notice, select a subject and due date, then send. Notices show as "Due" or "Past Due" based on the date.</p>
-    <p>Example Notice: "106: Finish Mission 3</p>
-  </header>
-  <div class="container">
-    <h2>Post a Notice</h2>
-    <input id="msg" type="text" placeholder="Your notice" required style="width: 70%;" />
-    <select id="subject" required>
-      <option value="" disabled selected>Select subject</option>
-      <option value="Math 1">Math 1</option>
-      <option value="EL">EL</option>
-      <option value="DV(D)">DV(D)</option>
-      <option value="DV(E)">DV(E)</option>
-      <option value="Art">Art</option>
-      <option value="HCL">HCL</option>
-      <option value="CL">CL</option>
-      <option value="Malay">Malay</option>
-      <option value="Hindi">Hindi</option>
-      <option value="Physics">Physics</option>
-      <option value="Chemistry">Chemistry</option>
-      <option value="Biology">Biology</option>
-      <option value="Math 2">Math 2</option>
-      <option value="PE">PE</option>
-      <option value="Humanities">Humanities</option>
-      <option value="CS">CS</option>
-      <option value="Math Oly">Math Oly</option>
-      <option value="Math Oly V">Math Oly V</option>
-      <option value="FwFractals">FwFractals</option>
-      <option value="Robotics">Robotics</option>
-      <option value="Third Lang">Third Lang</option>
-    </select>
-    <input id="dueDate" type="date" required />
-    <button id="submitBtn" onclick="submitMsg()">Submit</button>
-    <h3 class="section-title">Due Notices</h3>
-    <div id="due"></div>
-    <h3 class="section-title">Past Due Notices</h3>
-    <div id="pastdue"></div>
-    <div class="dropdown-btn" onclick="toggleDropdown()">▶ Older Messages</div>
-    <div class="dropdown-content" id="older"></div>
+  <!-- Login/Register Page -->
+  <div id="authPage" class="auth-container">
+    <h1>Message Board</h1>
+    <p class="subtitle">Connect and share messages with others</p>
+    
+    <div id="errorMsg" class="error hidden"></div>
+    
+    <div id="loginForm">
+      <h2>Login</h2>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="loginUsername" placeholder="Enter your username">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter your password">
+      </div>
+      <button onclick="login()">Login</button>
+      <div class="toggle-auth">
+        Don't have an account? <a onclick="showRegister()">Register here</a>
+      </div>
+    </div>
+    
+    <div id="registerForm" class="hidden">
+      <h2>Register</h2>
+      <div class="form-group">
+        <label>Username</label>
+        <input type="text" id="regUsername" placeholder="Choose a username">
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="regPassword" placeholder="Choose a password">
+      </div>
+      <div class="form-group">
+        <label>Confirm Password</label>
+        <input type="password" id="regPasswordConfirm" placeholder="Confirm your password">
+      </div>
+      <button onclick="register()">Register</button>
+      <div class="toggle-auth">
+        Already have an account? <a onclick="showLogin()">Login here</a>
+      </div>
+    </div>
   </div>
-<script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbwMw1rmVF_2m69v0AQqb-kK98ko5IV62k1a9LnImr7u96mL53trB6yKTVvbZ_hPvTe-/exec";
 
-    const subjectColors = {
-      "Math 1": "#1f77b4",
-      "EL": "#ff7f0e",
-      "DV(D)": "#2ca02c",
-      "DV(E)": "#d62728",
-      "Art": "#9467bd",
-      "HCL": "#8c564b",
-      "CL": "#e377c2",
-      "Malay": "#bcbd22",
-      "Hindi": "#17becf",
-      "Physics": "#0074D9",
-      "Chemistry": "#FF4136",
-      "Biology": "#2ECC40",
-      "Math 2": "#B10DC9",
-      "PE": "#FF851B",
-      "Humanities": "#7FDBFF",
-      "CS": "#39CCCC",
-      "Electives": "#F012BE",
-      "Third Lang": "#AAAAAA"
+  <!-- Main App Page -->
+  <div id="appPage" class="app-container hidden">
+    <h1>Message Board</h1>
+    
+    <div class="user-info">
+      <span>Logged in as: <strong id="currentUser"></strong></span>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+    
+    <h2>Post a Message</h2>
+    <div class="form-group">
+      <textarea id="messageText" placeholder="What's on your mind?"></textarea>
+    </div>
+    <button id="submitBtn" onclick="submitMessage()">Post Message</button>
+    
+    <h2>Messages</h2>
+    <div class="messages-container" id="messagesContainer"></div>
+  </div>
+
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycbwMw1rmVF_2m69v0AQqb-kK98ko5IV62k1a9LnImr7u96mL53trB6yKTVvbZ_hPvTe-/exec";
+    let currentUsername = null;
+
+    // Check if user is already logged in
+    window.onload = function() {
+      const savedUser = localStorage.getItem('username');
+      if (savedUser) {
+        currentUsername = savedUser;
+        showApp();
+        loadMessages();
+      }
     };
 
-    async function submitMsg() {
-      const msg = document.getElementById('msg').value.trim();
-      const dueDate = document.getElementById('dueDate').value;
-      const subject = document.getElementById('subject').value;
+    function showError(message) {
+      const errorDiv = document.getElementById('errorMsg');
+      errorDiv.textContent = message;
+      errorDiv.classList.remove('hidden');
+      setTimeout(() => errorDiv.classList.add('hidden'), 3000);
+    }
 
-      if (!msg) {
-        alert("Please enter a notice!");
-        return;
-      }
-      if (!subject) {
-        alert("Please select a subject!");
-        return;
-      }
-      if (!dueDate) {
-        alert("Please select a due date!");
+    function showLogin() {
+      document.getElementById('loginForm').classList.remove('hidden');
+      document.getElementById('registerForm').classList.add('hidden');
+    }
+
+    function showRegister() {
+      document.getElementById('loginForm').classList.add('hidden');
+      document.getElementById('registerForm').classList.remove('hidden');
+    }
+
+    function showApp() {
+      document.getElementById('authPage').classList.add('hidden');
+      document.getElementById('appPage').classList.remove('hidden');
+      document.getElementById('currentUser').textContent = currentUsername;
+    }
+
+    function showAuth() {
+      document.getElementById('authPage').classList.remove('hidden');
+      document.getElementById('appPage').classList.add('hidden');
+    }
+
+    async function register() {
+      const username = document.getElementById('regUsername').value.trim();
+      const password = document.getElementById('regPassword').value;
+      const passwordConfirm = document.getElementById('regPasswordConfirm').value;
+
+      if (!username || !password) {
+        showError('Please fill in all fields');
         return;
       }
 
-  button.disabled = true;
-  button.textContent = "Loading…";
-  button.style.backgroundColor = "#ccc";
-  button.style.cursor = "not-allowed";
+      if (password !== passwordConfirm) {
+        showError('Passwords do not match');
+        return;
+      }
+
+      if (password.length < 6) {
+        showError('Password must be at least 6 characters');
+        return;
+      }
+
+      try {
+        const response = await fetch(scriptURL, {
+          method: 'POST',
+          body: new URLSearchParams({
+            action: 'register',
+            username: username,
+            password: password
+          })
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+          currentUsername = username;
+          localStorage.setItem('username', username);
+          showApp();
+          loadMessages();
+          
+          // Clear form
+          document.getElementById('regUsername').value = '';
+          document.getElementById('regPassword').value = '';
+          document.getElementById('regPasswordConfirm').value = '';
+        } else {
+          showError(result.message || 'Registration failed');
+        }
+      } catch (error) {
+        showError('Network error. Please try again.');
+      }
+    }
+
+    async function login() {
+      const username = document.getElementById('loginUsername').value.trim();
+      const password = document.getElementById('loginPassword').value;
+
+      if (!username || !password) {
+        showError('Please fill in all fields');
+        return;
+      }
+
+      try {
+        const response = await fetch(scriptURL, {
+          method: 'POST',
+          body: new URLSearchParams({
+            action: 'login',
+            username: username,
+            password: password
+          })
+        });
+
+        const result = await response.json();
+        
+        if (result.success) {
+          currentUsername = username;
+          localStorage.setItem('username', username);
+          showApp();
+          loadMessages();
+          
+          // Clear form
+          document.getElementById('loginUsername').value = '';
+          document.getElementById('loginPassword').value = '';
+        } else {
+          showError(result.message || 'Invalid username or password');
+        }
+      } catch (error) {
+        showError('Network error. Please try again.');
+      }
+    }
+
+    function logout() {
+      currentUsername = null;
+      localStorage.removeItem('username');
+      showAuth();
+      showLogin();
+    }
+
+    async function submitMessage() {
+      const messageText = document.getElementById('messageText').value.trim();
       
-      await fetch(scriptURL, {
-        method: 'POST',
-        body: new URLSearchParams({
-          message: msg,
-          dueDate: dueDate,
-          subject: subject
-        })
-      });
+      if (!messageText) {
+        alert('Please enter a message');
+        return;
+      }
 
-      document.getElementById('msg').value = '';
-      document.getElementById('dueDate').value = '';
-      document.getElementById('subject').selectedIndex = 0;
-      loadMessages();
-    }
+      const button = document.getElementById('submitBtn');
+      button.disabled = true;
+      button.textContent = 'Posting...';
 
-    function toggleDropdown() {
-      const content = document.getElementById('older');
-      content.classList.toggle("show");
-    }
+      try {
+        await fetch(scriptURL, {
+          method: 'POST',
+          body: new URLSearchParams({
+            action: 'postMessage',
+            username: currentUsername,
+            message: messageText
+          })
+        });
 
-    function isOlderThanOneDay(dateStr) {
-      const now = new Date();
-      const msgDate = new Date(dateStr);
-      const diff = now - msgDate;
-      return diff > 24 * 60 * 60 * 1000;
-    }
-
-    function isPastDue(dueDateStr) {
-      if (!dueDateStr) return false;
-      const now = new Date();
-      // Set to end of day for due date
-      const due = new Date(dueDateStr);
-      due.setHours(23, 59, 59, 999);
-      return now > due;
-    }
-
-    function getSubjectColor(subject) {
-      return subjectColors[subject] || "#888";
+        document.getElementById('messageText').value = '';
+        loadMessages();
+      } catch (error) {
+        alert('Failed to post message');
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Post Message';
+      }
     }
 
     async function loadMessages() {
-      const res = await fetch(scriptURL);
-      const messages = await res.json();
+      try {
+        const response = await fetch(scriptURL + '?action=getMessages');
+        const messages = await response.json();
 
-      const dueDiv = document.getElementById('due');
-      const pastdueDiv = document.getElementById('pastdue');
-      const olderDiv = document.getElementById('older');
+        const container = document.getElementById('messagesContainer');
+        container.innerHTML = '';
 
-      dueDiv.innerHTML = '';
-      pastdueDiv.innerHTML = '';
-      olderDiv.innerHTML = '';
-
-      messages.reverse().forEach(m => {
-        if (!m.message) return;
-        const dueDate = m.dueDate || m.duedate || '';
-        const subject = m.subject || '';
-        const assignment = m.message || '';
-
-        const div = document.createElement('div');
-        div.className = 'message';
-        div.style.backgroundColor = getSubjectColor(subject);
-
-        const dueDivSpan = document.createElement('span');
-        dueDivSpan.className = "due-date";
-        dueDivSpan.textContent = dueDate;
-
-        const assignmentSpan = document.createElement('span');
-        assignmentSpan.textContent = assignment;
-
-        const subjectSpan = document.createElement('span');
-        subjectSpan.className = "subject-name";
-        subjectSpan.textContent = subject;
-
-        div.append(dueDivSpan, assignmentSpan, subjectSpan);
-
-        if (isPastDue(dueDate)) {
-          pastdueDiv.appendChild(div.cloneNode(true));
-        } else {
-          dueDiv.appendChild(div.cloneNode(true));
+        if (!messages || messages.length === 0) {
+          container.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">No messages yet. Be the first to post!</p>';
+          return;
         }
-        if (m.timestamp && isOlderThanOneDay(m.timestamp)) {
-          olderDiv.appendChild(div);
-        }
-      });
+
+        messages.reverse().forEach(msg => {
+          if (!msg.message || !msg.username) return;
+
+          const div = document.createElement('div');
+          div.className = 'message';
+
+          const header = document.createElement('div');
+          header.className = 'message-header';
+
+          const usernameSpan = document.createElement('span');
+          usernameSpan.className = 'username';
+          usernameSpan.textContent = msg.username;
+
+          const timestampSpan = document.createElement('span');
+          timestampSpan.className = 'timestamp';
+          if (msg.timestamp) {
+            const date = new Date(msg.timestamp);
+            timestampSpan.textContent = date.toLocaleString();
+          }
+
+          header.appendChild(usernameSpan);
+          header.appendChild(timestampSpan);
+
+          const messageText = document.createElement('div');
+          messageText.className = 'message-text';
+          messageText.textContent = msg.message;
+
+          div.appendChild(header);
+          div.appendChild(messageText);
+          container.appendChild(div);
+        });
+      } catch (error) {
+        console.error('Failed to load messages:', error);
+      }
     }
 
-    loadMessages();
+    // Refresh messages every 10 seconds
+    setInterval(() => {
+      if (currentUsername) {
+        loadMessages();
+      }
+    }, 10000);
   </script>
 </body>
 </html>
