@@ -1,4 +1,3 @@
-<script>
     const scriptURL = "https://script.google.com/macros/s/AKfycbz5dKd7bzUa4-dd-2UlH--Q8rhLuZetcfM5us4eijeP2p-wpyNI25HAK5E3oAVTTMo/exec";
     let currentUsername = null;
 
