@@ -1,11 +1,7 @@
-// Replace with your Google Apps Script Web App URL
-const BACKEND_URL = 'https://script.google.com/a/macros/students.edu.sg/s/AKfycbwLGEPD8-fkSYqGgE0j4Ok4roqJWmemzxVP3Acm2BWQTd9i1xhLMQB6ufwSEKI6Wpys/exec';
-
 document.getElementById('loginForm').onsubmit = async function(e) {
   e.preventDefault();
   const username = document.getElementById('loginUsername').value;
   const password = document.getElementById('loginPassword').value;
-
   const res = await fetch(`${'https://script.google.com/a/macros/students.edu.sg/s/AKfycbwLGEPD8-fkSYqGgE0j4Ok4roqJWmemzxVP3Acm2BWQTd9i1xhLMQB6ufwSEKI6Wpys/exec'}?action=login`, {
     method: 'POST',
     body: JSON.stringify({ username, password }),
@@ -34,7 +30,5 @@ document.getElementById('signupForm').onsubmit = async function(e) {
   if (data.success) {
     localStorage.setItem('username', username);
     window.location.href = 'index.html';
-  } else {
-    document.getElementById('message').textContent = 'Signup failed: ' + data.error;
   }
 };
