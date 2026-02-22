@@ -1,4 +1,3 @@
-// Replace with your deployed Apps Script web app URL
 const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbwvTmvUmo-lNBM5fCwZ3bD0whOVHy40FUUSuFQbeMUMWW0vhOdpxlT_pmYCLzCsenM5GQ/exec';
 
 let username = localStorage.getItem('username') || 'guest';
@@ -52,10 +51,6 @@ function setupForm() {
   if (!form) return;
   form.onsubmit = async function(e) {
     e.preventDefault();
-    if (username === 'guest') {
-      alert('Please login or sign up to send messages.');
-      return;
-    }
     const content = document.getElementById('messageInput').value.trim();
     if (!content) return;
     await fetch(`${'https://script.google.com/macros/s/AKfycbwvTmvUmo-lNBM5fCwZ3bD0whOVHy40FUUSuFQbeMUMWW0vhOdpxlT_pmYCLzCsenM5GQ/exec'}?action=sendMessage`, {
